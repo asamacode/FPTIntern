@@ -2,7 +2,9 @@ package com.asama.fptcandidate.controller;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.asama.fptcandidate.model.Candidate;
@@ -84,5 +86,69 @@ public class CandidateDao {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public List<Candidate> loadListCandidate() throws SQLException {
+		List<Candidate> candidateList= new ArrayList<Candidate>();
+		Candidate c = null;
+
+	    PreparedStatement ps = conn.prepareStatement("SELECT * FROM candidates");
+	    
+	    ResultSet rs = ps.executeQuery();
+
+	    while (rs.next()){
+	    	int type = rs.getInt("candidateType");
+	    	
+	    	switch (type) {
+			case Candidate.TYPE_EXPERIENCE:
+				c = new Experience();
+				c.setFullName(rs.getString("fullName"));
+				c.setCandidateType(type);
+				c.setBirthday(rs.getString("birthday"));
+				c.setPhone(rs.getString("phone"));
+				c.setEmail(rs.getString("email"));
+				
+				if (c instanceof Experience) {
+					((Experience) c).setExpInYear(rs.getInt("expInYear"));
+					((Experience) c).setProSkill(rs.getString("proSkill"));
+				}
+				break;
+			case Candidate.TYPE_FRESHER:
+				c = new Fresher();
+				c.setFullName(rs.getString("fullName"));
+				c.setCandidateType(type);
+				c.setBirthday(rs.getString("birthday"));
+				c.setPhone(rs.getString("phone"));
+				c.setEmail(rs.getString("email"));
+				
+				if (c instanceof Fresher) {
+					((Fresher) c).setGraduationDate(rs.getString("graduationDate"));
+					((Fresher) c).setGraduationRank(rs.getString("graduationRank"));
+					((Fresher) c).setEducation(rs.getString("education"));
+				}
+				break;
+			case Candidate.TYPE_INTERN:
+				c = new Intern();
+				c.setFullName(rs.getString("fullName"));
+				c.setCandidateType(type);
+				c.setBirthday(rs.getString("birthday"));
+				c.setPhone(rs.getString("phone"));
+				c.setEmail(rs.getString("email"));
+				
+				if (c instanceof Intern) {
+					((Intern) c).setMajor(rs.getString(rs.getString("major")));
+					((Intern) c).setUniversityName(rs.getString("universityName"));
+					((Intern) c).setSemester(rs.getInt("semester"));
+				}
+				break;	
+			default:
+				break;
+			}
+	        
+	        candidateList.add(c);
+	    }
+	    conn.close();
+
+	    return candidateList;
 	}
 }

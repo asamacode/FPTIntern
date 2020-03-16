@@ -1,11 +1,11 @@
 package com.asama.fptcandidate.view;
 
-import java.sql.Connection;
-import java.util.List;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 import com.asama.fptcandidate.controller.CandidateDao;
-import com.asama.fptcandidate.controller.JDBCConnection;
 import com.asama.fptcandidate.model.Candidate;
 import com.asama.fptcandidate.model.Experience;
 import com.asama.fptcandidate.model.Fresher;
@@ -19,8 +19,24 @@ public class CandidateManager {
 	public CandidateManager() {
 		candidateDao = new CandidateDao();
 	}
+	
+	
 
-	public void insertCandidate() {
+	@Override
+	protected void finalize() throws Throwable {
+		// TODO Auto-generated method stub
+		super.finalize();
+		if (sc != null) {
+			sc.close();
+		}
+	}
+
+	public void loadCandidate() throws SQLException {
+		System.out.println("Size: "+candidateDao.loadListCandidate().size());
+	}
+
+
+	public void insertCandidate() throws InvalidateBirthdayException, InvalidateEmailException {
 		count++;
 		Candidate candidate;
 		String name = inputName();
@@ -44,6 +60,11 @@ public class CandidateManager {
 			((Experience) candidate).setExpInYear(expIntYear);
 			((Experience) candidate).setProSkill(proSkill);
 			
+			if (!isValidEmail(email)) {
+				throw new InvalidateEmailException();
+			} else if (!isValidBirthday(birthday)) {
+				throw new InvalidateBirthdayException();
+			} else
 			candidateDao.insert(candidate);
 			System.out.println("Candidate count: " + count);
 		} else if (type == Candidate.TYPE_FRESHER) {
@@ -63,6 +84,11 @@ public class CandidateManager {
 			((Fresher) candidate).setGraduationRank(rank);
 			((Fresher) candidate).setEducation(edu);
 			
+			if (!isValidEmail(email)) {
+				throw new InvalidateEmailException();
+			} else if (!isValidBirthday(birthday)) {
+				throw new InvalidateBirthdayException();
+			} else
 			candidateDao.insert(candidate);
 			System.out.println("Candidate count: " + count);
 		} else if (type == Candidate.TYPE_INTERN){
@@ -70,6 +96,7 @@ public class CandidateManager {
 			sc.nextLine();
 			String major = inputMajor();
 			String university = inputUniversityName();
+			int semes = inputSemester();
 			
 			candidate.setFullName(name);
 			candidate.setCandidateType(type);
@@ -79,7 +106,13 @@ public class CandidateManager {
 			
 			((Intern) candidate).setMajor(major);
 			((Intern) candidate).setUniversityName(university);
+			((Intern) candidate).setSemester(semes);
 			
+			if (!isValidEmail(email)) {
+				throw new InvalidateEmailException();
+			} else if (!isValidBirthday(birthday)) {
+				throw new InvalidateBirthdayException();
+			} else
 			candidateDao.insert(candidate);
 			System.out.println("Candidate count: " + count);
 		} else {
@@ -152,5 +185,18 @@ public class CandidateManager {
 		System.out.println("Enter candidate University name: ");
 		return sc.nextLine();
 	}
+	
+	private boolean isValidEmail(String email) {
+	      String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
+	      return email.matches(regex);
+	}
+	
+	private boolean isValidBirthday(String dateStr) {
+		String dateCheck = "01/01/1900";
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		LocalDate date = LocalDate.parse(dateStr, dtf);
+		LocalDate dateC = LocalDate.parse(dateCheck, dtf);
+		return date.isAfter(dateC) && date.isBefore(LocalDate.now());
+    }
 
 }

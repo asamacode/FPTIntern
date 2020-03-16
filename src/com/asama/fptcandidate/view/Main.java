@@ -1,5 +1,6 @@
 package com.asama.fptcandidate.view;
 
+import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Main {
@@ -7,6 +8,15 @@ public class Main {
 	public static Scanner scanner = new Scanner(System.in);
 
 	public static void main(String[] args) {
+		
+		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+
+		    public void uncaughtException(Thread t, Throwable e) {
+		       System.out.println("The system has encountered an unexpected problem, sincerely sorry");
+		       showMenu();
+		    }
+		 });
+		
 		String choose = null;
         boolean exit = false;
         CandidateManager manager = new CandidateManager();
@@ -17,10 +27,20 @@ public class Main {
             choose = scanner.nextLine();
             switch (choose) {
             case "1":
-                manager.insertCandidate();
+                try {
+					manager.insertCandidate();
+				} catch (InvalidateBirthdayException | InvalidateEmailException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} 
                 break;
             case "2":
-                
+                try {
+					manager.loadCandidate();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
                 break;
             case "0":
                 System.out.println("exited!");
