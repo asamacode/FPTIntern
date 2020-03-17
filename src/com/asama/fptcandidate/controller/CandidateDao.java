@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,20 +82,47 @@ public class CandidateDao {
 			  
 			System.out.println("Insert completed ");
 			conn.commit();
+			prepStmt.close();
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
+	
+	public String loadCandidateName() throws SQLException {
+		
+		boolean first = false;
+		
+		StringBuffer sb = new StringBuffer();
+
+	    PreparedStatement ps = conn.prepareStatement("SELECT * FROM candidates");
+	    
+	    ResultSet rs = ps.executeQuery();
+	    rs.beforeFirst();
+	    
+	    while (rs.next()) {
+	    	if (!first) {
+	    		sb.append(rs.getString("fullName"));
+				first = true;
+			} else {
+				sb.append(", "+rs.getString("fullName"));
+			}
+		}
+	    ps.close();
+		
+	    return sb.toString();
+	}
 
 	public List<Candidate> loadListCandidate() throws SQLException {
+		
 		List<Candidate> candidateList= new ArrayList<Candidate>();
 		Candidate c = null;
 
 	    PreparedStatement ps = conn.prepareStatement("SELECT * FROM candidates");
 	    
 	    ResultSet rs = ps.executeQuery();
+	    rs.beforeFirst();
 
 	    while (rs.next()){
 	    	int type = rs.getInt("candidateType");
@@ -102,6 +130,7 @@ public class CandidateDao {
 	    	switch (type) {
 			case Candidate.TYPE_EXPERIENCE:
 				c = new Experience();
+				c.setCandidateID(rs.getInt("idCandidates"));
 				c.setFullName(rs.getString("fullName"));
 				c.setCandidateType(type);
 				c.setBirthday(rs.getString("birthday"));
@@ -112,9 +141,11 @@ public class CandidateDao {
 					((Experience) c).setExpInYear(rs.getInt("expInYear"));
 					((Experience) c).setProSkill(rs.getString("proSkill"));
 				}
+				
 				break;
 			case Candidate.TYPE_FRESHER:
 				c = new Fresher();
+				c.setCandidateID(rs.getInt("idCandidates"));
 				c.setFullName(rs.getString("fullName"));
 				c.setCandidateType(type);
 				c.setBirthday(rs.getString("birthday"));
@@ -126,9 +157,11 @@ public class CandidateDao {
 					((Fresher) c).setGraduationRank(rs.getString("graduationRank"));
 					((Fresher) c).setEducation(rs.getString("education"));
 				}
+				
 				break;
 			case Candidate.TYPE_INTERN:
 				c = new Intern();
+				c.setCandidateID(rs.getInt("idCandidates"));
 				c.setFullName(rs.getString("fullName"));
 				c.setCandidateType(type);
 				c.setBirthday(rs.getString("birthday"));
@@ -136,19 +169,61 @@ public class CandidateDao {
 				c.setEmail(rs.getString("email"));
 				
 				if (c instanceof Intern) {
-					((Intern) c).setMajor(rs.getString(rs.getString("major")));
+					((Intern) c).setMajor(rs.getString("major"));
 					((Intern) c).setUniversityName(rs.getString("universityName"));
 					((Intern) c).setSemester(rs.getInt("semester"));
 				}
+				
 				break;	
 			default:
+				System.out.println("Candidate type Not found");
 				break;
 			}
 	        
 	        candidateList.add(c);
 	    }
-	    conn.close();
+	    ps.close();
 
 	    return candidateList;
 	}
+	
+	public void updateAndInsertNewCandidate(int id) throws SQLException {
+		
+		Statement stmt = conn.createStatement(
+                ResultSet.TYPE_SCROLL_INSENSITIVE,
+                ResultSet.CONCUR_UPDATABLE);
+		
+		String sql = "SELECT * FROM candidates WHERE idCandidates = " + id;
+		ResultSet rs = stmt.executeQuery(sql);
+	      
+	      while(rs.next()){
+	      rs.updateString("fullName", "Name updated");
+	      rs.updateRow();
+	      }
+	      
+	      System.out.println("Inserting a new record...");
+	     
+	      rs.moveToInsertRow();
+	      rs.updateString("fullName","New Insert Name");
+	      rs.updateString("birthday","08/10/1997");
+	      rs.updateString("phone","0378345678");
+	      rs.updateString("email","newinsert@gmail.com");
+	      rs.updateString("proSkill","New Skill");
+	      rs.updateInt("candidateType", Candidate.TYPE_EXPERIENCE);
+	      rs.updateInt("expInYear",10);
+	      //Commit row
+	      rs.insertRow();
+	      
+	      stmt.close();
+	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		if (conn != null) {
+			conn.close();
+		}
+		super.finalize();
+	}
+	
+	
 }

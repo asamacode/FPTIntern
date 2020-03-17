@@ -57,7 +57,7 @@ public class Intern extends Candidate{
 
 	@Override
 	public void showInfo() {
-		System.out.println("Intern");
+		System.out.println(candidateID + " - " +fullName + " - " + "Intern - " + birthday+ " - " + phone + " - " + universityName + " - " + major + " - " + semester );
 		
 	}
 

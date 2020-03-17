@@ -1,15 +1,20 @@
 package com.asama.fptcandidate.view;
 
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 import com.asama.fptcandidate.controller.CandidateDao;
+import com.asama.fptcandidate.model.BirthdaySorter;
 import com.asama.fptcandidate.model.Candidate;
 import com.asama.fptcandidate.model.Experience;
 import com.asama.fptcandidate.model.Fresher;
 import com.asama.fptcandidate.model.Intern;
+import com.asama.fptcandidate.model.TypeSorter;
+import com.asama.fptcandidate.utils.CandidateUtils;
 
 public class CandidateManager {
 	public static Scanner sc = new Scanner(System.in);
@@ -30,9 +35,70 @@ public class CandidateManager {
 			sc.close();
 		}
 	}
+	
+	public void updateCandidateName() {
+		try {
+			candidateDao.updateAndInsertNewCandidate(1);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void showCandidateName() {
+		try {
+			System.out.println(candidateDao.loadCandidateName());
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void sortCandidate() {
+		List<Candidate> listCan;
+		try {
+			listCan = candidateDao.loadListCandidate();
+			
+			Collections.sort(listCan, new TypeSorter().thenComparing(new BirthdaySorter()));
+			
+			for (Candidate cd : listCan) {
+				cd.showInfo();
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
-	public void loadCandidate() throws SQLException {
-		System.out.println("Size: "+candidateDao.loadListCandidate().size());
+	public void loadCandidate() {
+		List<Candidate> listCan;
+		try {
+			listCan = candidateDao.loadListCandidate();
+			for (Candidate cd : listCan) {
+				cd.showInfo();
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void filterDuplicateCandidate() {
+		List<Candidate> listCan;
+		try {
+			listCan = candidateDao.loadListCandidate();
+			Set<Candidate> listCanSet = new HashSet<Candidate>();
+			for (Candidate cd : listCan) {
+				listCanSet.add(cd);
+			}
+			
+			for (Candidate cd : listCanSet) {
+				cd.showInfo();
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 
@@ -60,9 +126,9 @@ public class CandidateManager {
 			((Experience) candidate).setExpInYear(expIntYear);
 			((Experience) candidate).setProSkill(proSkill);
 			
-			if (!isValidEmail(email)) {
+			if (!CandidateUtils.isValidEmail(email)) {
 				throw new InvalidateEmailException();
-			} else if (!isValidBirthday(birthday)) {
+			} else if (!CandidateUtils.isValidBirthday(birthday)) {
 				throw new InvalidateBirthdayException();
 			} else
 			candidateDao.insert(candidate);
@@ -84,9 +150,9 @@ public class CandidateManager {
 			((Fresher) candidate).setGraduationRank(rank);
 			((Fresher) candidate).setEducation(edu);
 			
-			if (!isValidEmail(email)) {
+			if (!CandidateUtils.isValidEmail(email)) {
 				throw new InvalidateEmailException();
-			} else if (!isValidBirthday(birthday)) {
+			} else if (!CandidateUtils.isValidBirthday(birthday)) {
 				throw new InvalidateBirthdayException();
 			} else
 			candidateDao.insert(candidate);
@@ -108,9 +174,9 @@ public class CandidateManager {
 			((Intern) candidate).setUniversityName(university);
 			((Intern) candidate).setSemester(semes);
 			
-			if (!isValidEmail(email)) {
+			if (!CandidateUtils.isValidEmail(email)) {
 				throw new InvalidateEmailException();
-			} else if (!isValidBirthday(birthday)) {
+			} else if (!CandidateUtils.isValidBirthday(birthday)) {
 				throw new InvalidateBirthdayException();
 			} else
 			candidateDao.insert(candidate);
@@ -185,18 +251,5 @@ public class CandidateManager {
 		System.out.println("Enter candidate University name: ");
 		return sc.nextLine();
 	}
-	
-	private boolean isValidEmail(String email) {
-	      String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
-	      return email.matches(regex);
-	}
-	
-	private boolean isValidBirthday(String dateStr) {
-		String dateCheck = "01/01/1900";
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		LocalDate date = LocalDate.parse(dateStr, dtf);
-		LocalDate dateC = LocalDate.parse(dateCheck, dtf);
-		return date.isAfter(dateC) && date.isBefore(LocalDate.now());
-    }
 
 }

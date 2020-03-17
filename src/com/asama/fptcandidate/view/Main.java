@@ -7,12 +7,12 @@ public class Main {
 	
 	public static Scanner scanner = new Scanner(System.in);
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InvalidateBirthdayException, InvalidateEmailException {
 		
 		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
 
 		    public void uncaughtException(Thread t, Throwable e) {
-		       System.out.println("The system has encountered an unexpected problem, sincerely sorry");
+		    	System.err.println("The system has encountered an unexpected problem, sincerely sorry");
 		       showMenu();
 		    }
 		 });
@@ -27,27 +27,29 @@ public class Main {
             choose = scanner.nextLine();
             switch (choose) {
             case "1":
-                try {
-					manager.insertCandidate();
-				} catch (InvalidateBirthdayException | InvalidateEmailException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} 
+            	manager.insertCandidate();
                 break;
             case "2":
-                try {
-					manager.loadCandidate();
-				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+            	manager.loadCandidate();
                 break;
+            case "3" : 
+            	manager.sortCandidate();
+            	break;
+            case "4" : 
+            	manager.filterDuplicateCandidate();
+            	break;
+            case "5" :
+            	manager.showCandidateName();
+            	break;
+            case "6" :
+            	manager.updateCandidateName();
+            	break;
             case "0":
-                System.out.println("exited!");
+                System.out.println("Exited!");
                 exit = true;
                 break;
             default:
-                System.out.println("invalid! please choose action in below menu:");
+                System.out.println("Invalid! Please choose action in below menu:");
                 break;
             }
             if (exit) {
@@ -64,7 +66,11 @@ public class Main {
 	        System.out.println("-----------FPT------------");
 	        System.out.println("1. Add Candidate.");
 	        System.out.println("2. Show candidate.");
-	        System.out.println("0. exit.");
+	        System.out.println("3. Show sort candidate.");
+	        System.out.println("4. Filter duplicate candidate id.");
+	        System.out.println("5. Show all candidate name.");
+	        System.out.println("6. Update candidate name.");
+	        System.out.println("0. Exit.");
 	        System.out.println("---------------------------");
 	        System.out.print("Please choose: ");
 	    }

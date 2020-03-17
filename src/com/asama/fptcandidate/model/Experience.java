@@ -46,7 +46,7 @@ public class Experience extends Candidate{
 
 	@Override
 	public void showInfo() {
-		System.out.println("haha thanh cong "+getProSkill());
+		System.out.println(candidateID + " - " +fullName + " - Experience - " + birthday+ " - " + phone + " - " +expInYear + " - " + proSkill);
 		
 	}
 

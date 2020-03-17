@@ -55,7 +55,7 @@ public class Fresher extends Candidate{
 
 	@Override
 	public void showInfo() {
-		System.out.println("Fresher : ");
+		System.out.println(candidateID + " - " +fullName + " - Fresher - " + birthday+ " - " + phone + " - " + graduationDate + " - " + graduationRank + " - " + education);
 	}
 
 	

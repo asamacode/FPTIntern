@@ -6,8 +6,11 @@ public abstract class Candidate {
 	public static final int TYPE_FRESHER = 1;
 	public static final int TYPE_INTERN = 2;
 	
-	private int candidateID, candidateType, candidateCount;
-	private String fullName, birthday, phone, email;
+	protected int candidateID, candidateType, candidateCount;
+	protected String fullName;
+	protected String birthday;
+	protected String phone;
+	protected String email;
 	
 	public Candidate() {
 	}
@@ -103,7 +106,27 @@ public abstract class Candidate {
 		this.email = email;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + candidateID;
+		return result;
+	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Candidate other = (Candidate) obj;
+		if (candidateID != other.candidateID)
+			return false;
+		return true;
+	}
 
 	public abstract void showInfo();
 }
