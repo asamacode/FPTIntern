@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.asama.fptcandidate.model.Candidate;
+import com.asama.fptcandidate.model.Certificated;
 import com.asama.fptcandidate.model.Experience;
 import com.asama.fptcandidate.model.Fresher;
 import com.asama.fptcandidate.model.Intern;
@@ -217,6 +218,39 @@ public class CandidateDao {
 	      stmt.close();
 	}
 
+	public boolean checkCandidateExist(int id) throws SQLException {
+		PreparedStatement ps = conn.prepareStatement("SELECT * FROM candidates WHERE idCandidates = " + id);
+	    
+	    ResultSet rs = ps.executeQuery();
+	    
+	    if (rs.next()) {
+			return true;
+		}
+	    return false;
+	}
+	
+	public void insertCertificated(int id, Certificated certi) throws SQLException {
+		
+		conn.setAutoCommit(false);
+		
+		PreparedStatement prepStmt = conn.prepareStatement(
+				"INSERT INTO certificated(certificatedName, certificatedRank, certificatedDate, idCandidates) "
+				+ "values (?,?,?,?)");
+		
+		prepStmt.setString(1, certi.getCertificatedName());
+		prepStmt.setString(2, certi.getCertificatedRank());
+		prepStmt.setString(3, certi.getCertificatedDate());
+		prepStmt.setInt(4, id);
+		
+		prepStmt.addBatch();  
+		
+		prepStmt.executeBatch();
+		  
+		System.out.println("Insert completed ");
+		conn.commit();
+		prepStmt.close();
+	}
+	
 	@Override
 	protected void finalize() throws Throwable {
 		if (conn != null) {

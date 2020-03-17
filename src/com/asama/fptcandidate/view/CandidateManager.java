@@ -10,6 +10,7 @@ import java.util.Set;
 import com.asama.fptcandidate.controller.CandidateDao;
 import com.asama.fptcandidate.model.BirthdaySorter;
 import com.asama.fptcandidate.model.Candidate;
+import com.asama.fptcandidate.model.Certificated;
 import com.asama.fptcandidate.model.Experience;
 import com.asama.fptcandidate.model.Fresher;
 import com.asama.fptcandidate.model.Intern;
@@ -102,6 +103,32 @@ public class CandidateManager {
 	}
 
 
+	public void addCertificated() {
+		int id = inputCandidateId();
+		
+		try {
+			if (candidateDao.checkCandidateExist(id)) {
+				sc.nextLine();
+				String certificatedName = inputCertificatedName();
+				String certificatedRank = inputCertificatedRank();
+				String certificatedDate = inputCertificatedDate();
+				
+				Certificated ct = new Certificated();
+				ct.setCertificatedName(certificatedName);
+				ct.setCertificatedRank(certificatedRank);
+				ct.setCertificatedDate(certificatedDate);
+				
+				candidateDao.insertCertificated(id, ct);
+				
+			} else {
+				System.out.println("Candidate does not exist !");
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	public void insertCandidate() throws InvalidateBirthdayException, InvalidateEmailException {
 		count++;
 		Candidate candidate;
@@ -133,6 +160,7 @@ public class CandidateManager {
 			} else
 			candidateDao.insert(candidate);
 			System.out.println("Candidate count: " + count);
+			
 		} else if (type == Candidate.TYPE_FRESHER) {
 			candidate = new Fresher();
 			sc.nextLine();
@@ -191,6 +219,11 @@ public class CandidateManager {
 		 System.out.print("Enter candidate name: ");
 	     return sc.nextLine();
 	}
+	
+	private int inputCandidateId() {
+		 System.out.print("Enter candidate id: ");
+	     return sc.nextInt();
+	}
 	 
 	private int inputType() {
 		 System.out.print("Enter candidate type: ");
@@ -198,7 +231,7 @@ public class CandidateManager {
 	}
 	
 	private String inputBirthday() {
-		 System.out.print("Enter candidate birthday: ");
+		 System.out.print("Enter candidate birthday, ex: 03/03/2020: ");
 	     return sc.nextLine();
 	}
 	
@@ -223,7 +256,7 @@ public class CandidateManager {
 	}
 	
 	private String inputGraduateDate() {
-		System.out.println("Enter candidate graduate date: ");
+		System.out.println("Enter candidate graduate date, ex: 03/03/2020: ");
 		return sc.nextLine();
 	}
 	
@@ -249,6 +282,21 @@ public class CandidateManager {
 	
 	private String inputUniversityName() {
 		System.out.println("Enter candidate University name: ");
+		return sc.nextLine();
+	}
+	
+	private String inputCertificatedName() {
+		System.out.println("Enter certificated name: ");
+		return sc.nextLine();
+	}
+	
+	private String inputCertificatedRank() {
+		System.out.println("Enter certificated rank: ");
+		return sc.nextLine();
+	}
+	
+	private String inputCertificatedDate() {
+		System.out.println("Enter certificated date, ex: 03/03/2020 : ");
 		return sc.nextLine();
 	}
 

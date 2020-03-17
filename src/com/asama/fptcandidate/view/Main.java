@@ -1,6 +1,5 @@
 package com.asama.fptcandidate.view;
 
-import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Main {
@@ -13,7 +12,7 @@ public class Main {
 
 		    public void uncaughtException(Thread t, Throwable e) {
 		    	System.err.println("The system has encountered an unexpected problem, sincerely sorry");
-		       showMenu();
+		    	showMenu();
 		    }
 		 });
 		
@@ -44,6 +43,9 @@ public class Main {
             case "6" :
             	manager.updateCandidateName();
             	break;
+            case "7" : 
+            	manager.addCertificated();
+            	break;
             case "0":
                 System.out.println("Exited!");
                 exit = true;
@@ -69,7 +71,8 @@ public class Main {
 	        System.out.println("3. Show sort candidate.");
 	        System.out.println("4. Filter duplicate candidate id.");
 	        System.out.println("5. Show all candidate name.");
-	        System.out.println("6. Update candidate name.");
+	        System.out.println("6. Update and insert new candidate.");
+	        System.out.println("7. Add certificated");
 	        System.out.println("0. Exit.");
 	        System.out.println("---------------------------");
 	        System.out.print("Please choose: ");
