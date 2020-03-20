@@ -2,7 +2,6 @@ package com.asama.fptcandidate.utils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
@@ -30,4 +29,5 @@ public class CandidateUtils {
 		
 		return date.atOffset(ZoneOffset.UTC).toInstant().toEpochMilli();
 	}
+	
 }
